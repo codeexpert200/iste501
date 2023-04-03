@@ -1,4 +1,11 @@
 {
+  "name": "Medivance",
+  "version": "1.0.0",
+  "description": "Medivance Flutter Project for Senior Development Project 1 and 2.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
     "body-parser": "^1.20.2",
