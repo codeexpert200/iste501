@@ -168,7 +168,7 @@ You are receiving this email because you requested a password reset for your acc
 
 Please click on the link below, or paste it in your browser to reset the password of your account.
 
-http://${req.headers.host}/resetpassword.html?token=${token}
+https://iste501.000webhostapp.com/resetpassword.html?token=${token}
 
 Please note that the link above is valid for one hour from the time you received this email.
 
