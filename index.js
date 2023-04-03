@@ -6,7 +6,6 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
 const sgMail = require('@sendgrid/mail');
-//sgMail.setApiKey('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');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
@@ -16,10 +15,10 @@ app.use(express.static(path.join(__dirname, '../web')));
 app.use(cors());
 
 const connection = mysql.createConnection({
-  host: process.env.MYSQL_HOST || 'localhost',
-  user: process.env.MYSQL_USER || 'root',
-  password: process.env.MYSQL_PASSWORD || 'MOHAMMADyameen@99',
-  database: process.env.MYSQL_DATABASE || 'capstone',
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
 });
 connection.connect((err) => {
   if (err) throw err;
