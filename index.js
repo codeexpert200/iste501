@@ -221,15 +221,22 @@ app.post('/resetpassword', async (req, res) => {
 });
 
 app.post('/getheartrate', (req, res) => {
-  const timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+  const userId = req.body.userId;
 
-  const query = 'INSERT INTO patient_heart_rate (patient_id, patient_heart_rate_value, patient_heart_rate_timestamp) VALUES (?, ?, ?)';
-  connection.query(query, [1, 69, timestamp], (error, results) => {
+  const query1 = 'SELECT patient_heart_rate_value, patient_heart_rate_timestamp FROM patient_heart_rate WHERE patient_id = ?';
+  connection.query(query1, [userId], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Server error');
     } else {
-      res.status(200).send('Heart rate data added successfully');
+      if (results.length > 0) {
+        res.status(200).json({
+          patient_heart_rate_value: results[0].patient_heart_rate_value,
+          patient_heart_rate_timestamp: results[0].patient_heart_rate_timestamp,
+        });
+      } else {
+        res.status(401).send('No heart rate data found');
+      }
     }
   });
 });
