@@ -241,6 +241,27 @@ app.post('/getheartrate', (req, res) => {
   });
 });
 
+app.post('/gettemperature', (req, res) => {
+  const userId = req.body.userId;
+
+  const query1 = 'SELECT patient_temperature_value, patient_temperature_timestamp FROM patient_temperature WHERE patient_id = ?';
+  connection.query(query1, [userId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      if (results.length > 0) {
+        res.status(200).json({
+          patient_temperature_value: results[0].patient_temperature_value,
+          patient_temperature_timestamp: results[0].patient_temperature_timestamp,
+        });
+      } else {
+        res.status(401).send('No temperature data found');
+      }
+    }
+  });
+});
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Node.js running on port ${PORT}`);
