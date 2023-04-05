@@ -222,9 +222,9 @@ app.post('/resetpassword', async (req, res) => {
 
 app.post('/getheartrate', (req, res) => {
   const userId = req.body.userId;
-
-  const query1 = 'SELECT patient_heart_rate_value, patient_heart_rate_timestamp FROM patient_heart_rate WHERE patient_id = ?';
-  connection.query(query1, [userId], (error, results) => {
+  const timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+  const query1 = 'INSERT INTO patient_heart_rate (patient_id, patient_heart_rate_value, patient_heart_rate_timestamp) VALUES (?, ?, ?)';
+  connection.query(query1, [1, 69, timestamp], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Server error');
