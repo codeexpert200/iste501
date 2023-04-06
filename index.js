@@ -168,7 +168,7 @@ app.post('/signup', (req, res) => {
       const bloodType = row.patient_verify_email_blood_type;
       const emergencyContactName = row.patient_verify_email_emergency_contact_name;
       const emergencyContactPhone = row.patient_verify_email_emergency_contact_phone;
-      const query2 = 'INSERT INTO user (user_email, user_password, user_type) VALUES (?, SHA2(?, 256), ?)';
+      const query2 = 'INSERT INTO user (user_email, user_password, user_type) VALUES (?, ?, ?)';
       connection.query(query2, [email, password, "Patient"], (error, results2) => {
         if (error) {
           console.error(error);
