@@ -148,8 +148,9 @@ Medivance Support Team`,
 
 app.post('/signup', (req, res) => {
   const token = req.body.token;
-  const query1 = 'SELECT * FROM patient_verify_email WHERE patient_verify_email_token = ?';
-  connection.query(query1, [token], (error, results1) => {
+  const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+  const query1 = 'SELECT * FROM patient_verify_email WHERE patient_verify_email_token = ? AND patient_verify_email_timestamp > ?';
+  connection.query(query1, [token, timestamp], (error, results1) => {
     if (error) {
       console.error(error);
       res.status(500).send('Server error');
