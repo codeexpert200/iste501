@@ -114,7 +114,7 @@ app.post('/verifyemail', (req, res) => {
       } else {
         if (results.length > 0) {
           const query2 = 'UPDATE patient_verify_email SET patient_verify_email_token = ?, patient_verify_email_first_name = ?, patient_verify_email_last_name = ?, patient_verify_email_phone_number = ?, patient_verify_email_date_of_birth = ?, patient_verify_email_nationality = ?, patient_verify_email_gender = ?, patient_verify_email_blood_type = ?, patient_verify_email_emergency_contact_name = ?, patient_verify_email_emergency_contact_phone = ?, patient_verify_email_password = SHA2(?, 256), patient_verify_email_timestamp_expire = ? WHERE patient_verify_email_email = ?';
-          connection.query(query2, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
+          connection.query(query2, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp, email], (error, results) => {
             if (error) {
               console.error(error);
               res.status(500).send('Server error');
