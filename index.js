@@ -106,12 +106,32 @@ app.post('/verifyemail', (req, res) => {
     const bloodType = req.body.bloodType;
     const emergencyContactName = req.body.emergencyContactName;
     const emergencyContactPhone = req.body.emergencyContactPhone;
-    const query1 = 'INSERT INTO patient_verify_email (patient_verify_email_token, patient_verify_email_first_name, patient_verify_email_last_name, patient_verify_email_phone_number, patient_verify_email_date_of_birth, patient_verify_email_nationality, patient_verify_email_gender, patient_verify_email_blood_type, patient_verify_email_emergency_contact_name, patient_verify_email_emergency_contact_phone, patient_verify_email_email, patient_verify_email_password, patient_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
-    connection.query(query1, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
+    const query1 = 'SELECT * FROM patient_verify_email WHERE patient_verify_email_email = ?';
+    connection.query(query1, [email], (error, results) => {
       if (error) {
         console.error(error);
         res.status(500).send('Server error');
+      } else {
+        if (results.length > 0) {
+          const query2 = 'UPDATE patient_verify_email SET patient_verify_email_token = ?, patient_verify_email_first_name = ?, patient_verify_email_last_name = ?, patient_verify_email_phone_number = ?, patient_verify_email_date_of_birth = ?, patient_verify_email_nationality = ?, patient_verify_email_gender = ?, patient_verify_email_blood_type = ?, patient_verify_email_emergency_contact_name = ?, patient_verify_email_emergency_contact_phone = ?, patient_verify_email_password = SHA2(?, 256), patient_verify_email_timestamp_expire = ? WHERE patient_verify_email_email = ?';
+          connection.query(query2, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
+            if (error) {
+              console.error(error);
+              res.status(500).send('Server error');
+            }
+          });
+        } else {
+          const query3 = 'INSERT INTO patient_verify_email (patient_verify_email_token, patient_verify_email_first_name, patient_verify_email_last_name, patient_verify_email_phone_number, patient_verify_email_date_of_birth, patient_verify_email_nationality, patient_verify_email_gender, patient_verify_email_blood_type, patient_verify_email_emergency_contact_name, patient_verify_email_emergency_contact_phone, patient_verify_email_email, patient_verify_email_password, patient_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
+          connection.query(query3, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
+            if (error) {
+              console.error(error);
+              res.status(500).send('Server error');
+            }
+        });
       }
+    }
+    });
+    
         const mailOptions = {
           from: 'medivance.no.reply@gmail.com',
           to: email,
@@ -146,7 +166,6 @@ Medivance Support Team`,
             res.status(500).send('Error sending email');
           });
       });
-  });
 
 app.post('/signup', (req, res) => {
   const token = req.body.token;
