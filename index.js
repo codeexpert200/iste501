@@ -92,6 +92,7 @@ app.post('/signin', (req, res) => {
 app.post('/verifyemail', (req, res) => {
     const token = crypto.randomBytes(20).toString('hex');
     const now = new Date();
+    now.setUTCHours(now.getUTCHours() + 4);
     const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
     const email = req.body.email;
     const password = req.body.password;
@@ -148,6 +149,8 @@ Medivance Support Team`,
 
 app.post('/signup', (req, res) => {
   const token = req.body.token;
+  const now = new Date();
+  now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
   const query1 = 'SELECT * FROM patient_verify_email WHERE patient_verify_email_token = ? AND patient_verify_email_timestamp > ?';
   connection.query(query1, [token, timestamp], (error, results1) => {
