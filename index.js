@@ -227,8 +227,8 @@ app.post('/forgotpassword', (req, res) => {
   const token = crypto.randomBytes(20).toString('hex');
 
   // Check if the email exists in the database and update the token and expiration
-  const query1 = `UPDATE user SET user_password_reset_token = ?, user_password_reset_expire = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE user_email = ?`;
-  connection.query(query1, [token, email], (err, result) => {
+  const query1 = 'INSERT INTO patient_reset_password (patient_reset_password_token, patient_reset_password_email, patient_reset_password_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
+  connection.query(query1, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
     if (err) throw err
     if (result.changedRows === 0) {
       res.status(400).send('Email not found');
@@ -285,7 +285,7 @@ app.post('/resetpassword', async (req, res) => {
       return;
     }
     else {
-      const query2 = `UPDATE user SET user_password = ?, user_password_reset_token = NULL, user_password_reset_expire = NULL WHERE user_id = ?`;
+      const query2 = `UPDATE user SET user_password = SHA2(?, 256), user_password_reset_token = NULL, user_password_reset_expire = NULL WHERE user_id = ?`;
       connection.query(query2, [newPassword, result[0].user_id], (err, results) => {
         if (err) throw err;
 
