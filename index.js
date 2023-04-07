@@ -186,8 +186,8 @@ app.post('/signup', (req, res) => {
               console.error(error);
               res.status(500).send('Server error');
             } else {
-              const query4 = 'DELETE FROM patient_verify_email WHERE patient_verify_email_token = ?';
-              connection.query(query4, [token], (error, results4) => {
+              const query4 = 'DELETE FROM patient_verify_email WHERE patient_verify_email_email = ?';
+              connection.query(query4, [email], (error, results4) => {
                 if (error) {
                   console.error(error);
                   res.status(500).send('Server error');
