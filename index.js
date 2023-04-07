@@ -6,7 +6,6 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
 const sgMail = require('@sendgrid/mail');
-const schedule = require('node-schedule');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
@@ -361,36 +360,3 @@ app.post('/gettemperature', (req, res) => {
     }
   });
 });
-
-function deleteExpiredTokens1() {
-  const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 4); // UTC +4
-  const currentTimestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  
-  const query = 'DELETE FROM patient_verify_email WHERE patient_verify_email_timestamp_expire < ?';
-  connection.query(query, [currentTimestamp], (error, results) => {
-    if (error) {
-      console.error('Error deleting expired tokens:', error);
-    } else {
-      console.log('Deleted expired tokens');
-    }
-  });
-}
-
-function deleteExpiredTokens2() {
-  const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 4); // UTC +4
-  const currentTimestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  
-  const query = 'DELETE FROM reset_password WHERE reset_password_timestamp_expire < ?';
-  connection.query(query, [currentTimestamp], (error, results) => {
-    if (error) {
-      console.error('Error deleting expired tokens:', error);
-    } else {
-      console.log('Deleted expired tokens');
-    }
-  });
-}
-
-const job1 = schedule.scheduleJob('0 0 * * *', deleteExpiredTokens1);
-const job2 = schedule.scheduleJob('0 0 * * *', deleteExpiredTokens2);
