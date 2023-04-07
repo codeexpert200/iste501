@@ -91,8 +91,9 @@ app.post('/signin', (req, res) => {
 
 app.post('/verifyemail', (req, res) => {
     const token = crypto.randomBytes(20).toString('hex');
+    const expiresIn = 1;
     const now = new Date();
-    now.setUTCHours(now.getUTCHours() + 4);
+    now.setUTCHours(now.getUTCHours() + 4 + expiresIn);
     const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
     const email = req.body.email;
     const password = req.body.password;
