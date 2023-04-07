@@ -225,16 +225,17 @@ app.post('/forgotpassword', (req, res) => {
   const email = req.body.email;
   // Generate a random token
   const token = crypto.randomBytes(20).toString('hex');
-
-  // Check if the email exists in the database and update the token and expiration
-  const query1 = `UPDATE user SET user_password_reset_token = ?, user_password_reset_expire = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE user_email = ?`;
-  connection.query(query1, [token, email], (err, result) => {
-    if (err) throw err
-    if (result.changedRows === 0) {
-      res.status(400).send('Email not found');
-      return;
+  const expiresIn = 1;
+  const now = new Date();
+  now.setUTCHours(now.getUTCHours() + 4 + expiresIn);
+  const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
+// Check if the email exists in the database and update the token and expiration
+  const query1 = 'INSERT INTO reset_password (reset_password_token, reset_password_email, reset_password_timestamp_expire) VALUES (?, ?, ?)';
+  connection.query(query1, [token, email, timestamp], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
     }
-
     // Set up your email credentials and create a transporter
         // Set up the email options
         const mailOptions = {
@@ -275,9 +276,12 @@ Medivance Support Team`,
 
 app.post('/resetpassword', async (req, res) => {
   const { token, newPassword } = req.body;
+  const now = new Date();
+  now.setUTCHours(now.getUTCHours() + 4);
+  const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
   // Find the user with the provided token and check if it's still valid
-  const query1 = `SELECT * FROM user WHERE user_password_reset_token = ? AND user_password_reset_expire > NOW()`;
-  connection.query(query1, [token], async (err, result) => {
+  const query1 = `SELECT reset_password_email FROM reset_password WHERE reset_password_token = ? AND reset_password_timestamp_expire > ?`;
+  connection.query(query1, [token, timestamp], async (err, result) => {
     if (err) throw err;
 
     if (result.length === 0) {
@@ -285,16 +289,25 @@ app.post('/resetpassword', async (req, res) => {
       return;
     }
     else {
-      const query2 = `UPDATE user SET user_password = ?, user_password_reset_token = NULL, user_password_reset_expire = NULL WHERE user_id = ?`;
-      connection.query(query2, [newPassword, result[0].user_id], (err, results) => {
+      const email = result[0].reset_password_email;
+      const query2 = `UPDATE user SET user_password = SHA2(?, 256) WHERE user_email = ?`;
+      connection.query(query2, [newPassword, email], (err, results) => {
         if (err) throw err;
 
         if (result.length === 0) {
-          res.status(400).send('Invalid or expired token');
+          res.status(400).send('Email does not exist');
           return;
         }
         else {
-          res.status(200).send('Password updated');
+          const query3 = 'DELETE FROM reset_password WHERE reset_password_email = ?';
+          connection.query(query3, [email], (error, results3) => {
+            if (error) {
+              console.error(error);
+              res.status(500).send('Server error');
+            } else {
+              res.status(200).send('Password reset successful');
+            }
+          });
         }
       });
     }
