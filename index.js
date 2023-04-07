@@ -106,7 +106,7 @@ app.post('/verifyemail', (req, res) => {
     const bloodType = req.body.bloodType;
     const emergencyContactName = req.body.emergencyContactName;
     const emergencyContactPhone = req.body.emergencyContactPhone;
-    const query1 = 'INSERT INTO patient_verify_email (patient_verify_email_token, patient_verify_email_first_name, patient_verify_email_last_name, patient_verify_email_phone_number, patient_verify_email_date_of_birth, patient_verify_email_nationality, patient_verify_email_gender, patient_verify_email_blood_type, patient_verify_email_emergency_contact_name, patient_verify_email_emergency_contact_phone, patient_verify_email_email, patient_verify_email_password, patient_verify_email_timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
+    const query1 = 'INSERT INTO patient_verify_email (patient_verify_email_token, patient_verify_email_first_name, patient_verify_email_last_name, patient_verify_email_phone_number, patient_verify_email_date_of_birth, patient_verify_email_nationality, patient_verify_email_gender, patient_verify_email_blood_type, patient_verify_email_emergency_contact_name, patient_verify_email_emergency_contact_phone, patient_verify_email_email, patient_verify_email_password, patient_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
     connection.query(query1, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
       if (error) {
         console.error(error);
@@ -153,7 +153,7 @@ app.post('/signup', (req, res) => {
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  const query1 = 'SELECT * FROM patient_verify_email WHERE patient_verify_email_token = ? AND patient_verify_email_timestamp > ?';
+  const query1 = 'SELECT * FROM patient_verify_email WHERE patient_verify_email_token = ? AND patient_verify_email_timestamp_expire > ?';
   connection.query(query1, [token, timestamp], (error, results1) => {
     if (error) {
       console.error(error);
