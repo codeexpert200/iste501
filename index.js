@@ -106,7 +106,7 @@ app.post('/verifyemail', (req, res) => {
     const bloodType = req.body.bloodType;
     const emergencyContactName = req.body.emergencyContactName;
     const emergencyContactPhone = req.body.emergencyContactPhone;
-    const query1 = 'INSERT INTO patient_verify_email (patient_verify_email_token, patient_verify_email_first_name, patient_verify_email_last_name, patient_verify_email_phone_number, patient_verify_email_date_of_birth, patient_verify_email_nationality, patient_verify_email_gender, patient_verify_email_blood_type, patient_verify_email_emergency_contact_name, patient_verify_email_emergency_contact_phone, patient_verify_email_email, patient_verify_email_password, patient_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
+    const query1 = 'INSERT INTO patient_verify_email (patient_verify_email_token, patient_verify_email_first_name, patient_verify_email_last_name, patient_verify_email_phone_number, patient_verify_email_date_of_birth, patient_verify_email_nationality, patient_verify_email_gender, patient_verify_email_blood_type, patient_verify_email_emergency_contact_name, patient_verify_email_emergency_contact_phone, patient_verify_email_email, patient_verify_email_password, patient_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?) ON DUPLICATE KEY UPDATE';
     connection.query(query1, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
       if (error) {
         console.error(error);
@@ -285,7 +285,7 @@ app.post('/resetpassword', async (req, res) => {
       return;
     }
     else {
-      const query2 = `UPDATE user SET user_password = SHA2(?, 256), user_password_reset_token = NULL, user_password_reset_expire = NULL WHERE user_id = ?`;
+      const query2 = `UPDATE user SET user_password = ?, user_password_reset_token = NULL, user_password_reset_expire = NULL WHERE user_id = ?`;
       connection.query(query2, [newPassword, result[0].user_id], (err, results) => {
         if (err) throw err;
 
