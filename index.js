@@ -186,15 +186,7 @@ app.post('/signup', (req, res) => {
               console.error(error);
               res.status(500).send('Server error');
             } else {
-              const query4 = 'DELETE FROM patient_verify_email WHERE patient_verify_email_token = ?';
-              connection.query(query4, [token], (error, results4) => {
-                if (error) {
-                  console.error(error);
-                  res.status(500).send('Server error');
-                } else {
-                  res.status(200).send('Patient added');
-                }
-              });
+              res.status(200).send('Patient added');
             }
           });
         }
