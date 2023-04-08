@@ -6,6 +6,8 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
 const sgMail = require('@sendgrid/mail');
+const multer = require('multer');
+const upload = multer();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
@@ -319,7 +321,7 @@ app.post('/resetpassword', async (req, res) => {
   });
 });
 
-app.post('/uploadmedicalrecord', (req, res) => {
+app.post('/uploadmedicalrecord', upload.fields([{ name: 'pdf_data', maxCount: 1 }]), (req, res) => {
   const userId = parseInt(req.body.user_id);
   console.log('Request body:', req.body);
   const pdfData = req.body.pdf_data;
