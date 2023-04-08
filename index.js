@@ -326,7 +326,7 @@ app.post('/uploadmedicalrecord', upload.fields([{ name: 'pdf_data', maxCount: 1 
   console.log('Request body:', req.body);
   const pdfData = req.files.pdf_data[0].buffer.toString('base64');
   const fileName = req.body.file_name;
-  const fileSize = parseInt(req.body.file_size);
+  const fileSize = parseInt(req.body.file_size, 10);
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
