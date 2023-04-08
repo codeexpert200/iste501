@@ -321,8 +321,8 @@ app.post('/resetpassword', async (req, res) => {
 
 app.post('/uploadmedicalrecord', (req, res) => {
   const userId = parseInt(req.body.user_id);
+  console.log('Request body:', req.body);
   const pdfData = req.body.pdf_data;
-  console.log('PDF Data: ', pdfData);
   const fileName = req.body.file_name;
   const fileSize = parseInt(req.body.file_size);
   const now = new Date();
