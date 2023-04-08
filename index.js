@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const cors = require('cors');
+const multer  = require('multer');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
@@ -320,6 +321,29 @@ app.post('/resetpassword', async (req, res) => {
   });
 });
 
+app.post('/uploadmedicalrecord', upload.single('pdf'), async (req, res) => {
+  try {
+    const userId = req.body.user_id;
+    const file = req.file;
+    const fileName = file.originalname;
+    const filePath = file.path;
+    const fileSize = file.size;
+    const now = new Date();
+    now.setUTCHours(now.getUTCHours() + 4);
+    const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
+
+    // Save the file path and other details to the database
+    const connection = await pool.getConnection();
+    const [rows, fields] = await connection.execute('INSERT INTO patient_medical_record (patient_id, patient_medical_record_name, patient_medical_record_path, patient_medical_record_size, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)', [userId, fileName, filePath, fileSize, timestamp]);
+    connection.release();
+
+    res.status(200).send('File uploaded successfully');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Failed to upload file');
+  }
+});
+
 app.post('/getheartrate', (req, res) => {
   const userId = req.body.userId;
 
@@ -361,36 +385,3 @@ app.post('/gettemperature', (req, res) => {
     }
   });
 });
-
-function deleteExpiredTokens1() {
-  const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 4); // UTC +4
-  const currentTimestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  
-  const query = 'DELETE FROM patient_verify_email WHERE patient_verify_email_timestamp_expire < ?';
-  connection.query(query, [currentTimestamp], (error, results) => {
-    if (error) {
-      console.error('Error deleting expired tokens:', error);
-    } else {
-      console.log('Deleted expired tokens');
-    }
-  });
-}
-
-function deleteExpiredTokens2() {
-  const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 4); // UTC +4
-  const currentTimestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  
-  const query = 'DELETE FROM reset_password WHERE reset_password_timestamp_expire < ?';
-  connection.query(query, [currentTimestamp], (error, results) => {
-    if (error) {
-      console.error('Error deleting expired tokens:', error);
-    } else {
-      console.log('Deleted expired tokens');
-    }
-  });
-}
-
-const job1 = schedule.scheduleJob('0 0 * * *', deleteExpiredTokens1);
-const job2 = schedule.scheduleJob('0 0 * * *', deleteExpiredTokens2);
