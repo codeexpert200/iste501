@@ -321,11 +321,13 @@ app.post('/resetpassword', async (req, res) => {
 
 app.post('/uploadmedicalrecord', (req, res) => {
   const userId = req.body.user_id;
-  const pdfData = req.body.pdf
+  const pdfData = req.body.pdf_data;
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  const query1 = 'INSERT INTO patient_medical_record (patient_id, patient_medical_record_name, patient_medical_record_size, pdf_file, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)';
+  const fileName = req.body.file_name;
+  const fileSize = req.body.file_size;
+  const query1 = 'INSERT INTO patient_medical_record (patient_id, patient_medical_record_name, patient_medical_record_size, patient_medical_record_file, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)';
   connection.query(query1, [userId, fileName, fileSize, Buffer.from(pdfData, 'base64'), timestamp], (error, results) => {
     if (error) {
       console.error(error);
@@ -335,6 +337,7 @@ app.post('/uploadmedicalrecord', (req, res) => {
     }
   });
 });
+
 
 app.post('/getheartrate', (req, res) => {
   const userId = req.body.userId;
