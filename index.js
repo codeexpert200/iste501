@@ -320,10 +320,10 @@ app.post('/resetpassword', async (req, res) => {
 });
 
 app.post('/uploadmedicalrecord', (req, res) => {
-  const userId = req.body.user_id;
+  const userId = parseInt(req.body.user_id);
   const pdfData = req.body.pdf_data;
   const fileName = req.body.file_name;
-  const fileSize = req.body.file_size;
+  const fileSize = parseInt(req.body.file_size);
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
