@@ -2,12 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const cors = require('cors');
-const multer  = require('multer');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
 const sgMail = require('@sendgrid/mail');
-const schedule = require('node-schedule');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
@@ -385,4 +383,3 @@ app.post('/gettemperature', (req, res) => {
     }
   });
 });
-
