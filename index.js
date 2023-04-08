@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const cors = require('cors');
-const multer  = require('multer');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
@@ -322,15 +321,12 @@ app.post('/resetpassword', async (req, res) => {
 
 app.post('/uploadmedicalrecord', (req, res) => {
   const userId = req.body.user_id;
-  const file = req.file;
-  const fileName = file.originalname;
-  const filePath = file.path;
-  const fileSize = file.size;
+  const pdfData = req.body.pdf
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  const query1 = 'INSERT INTO patient_medical_record (patient_id, patient_medical_record_name, patient_medical_record_path, patient_medical_record_size, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)';
-  connection.query(query1, [userId, fileName, filePath, fileSize, timestamp], (error, results) => {
+  const query1 = 'INSERT INTO patient_medical_record (patient_id, patient_medical_record_name, patient_medical_record_size, pdf_file, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)';
+  connection.query(query1, [userId, fileName, fileSize, Buffer.from(pdfData, 'base64'), timestamp], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Server error');
