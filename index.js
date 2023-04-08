@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const cors = require('cors');
+const multer  = require('multer');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
@@ -319,7 +320,7 @@ app.post('/resetpassword', async (req, res) => {
   });
 });
 
-app.post('/uploadmedicalrecord', upload.single('pdf'), async (req, res) => {
+app.post('/uploadmedicalrecord', async (req, res) => {
   try {
     const userId = req.body.user_id;
     const file = req.file;
