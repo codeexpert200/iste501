@@ -102,7 +102,7 @@ app.post('/signin', (req, res) => {
                     user_id: userId,
                     mentor_first_name: mentor.mentor_first_name,
                     mentor_last_name: mentor.mentor_last_name,
-                    mentor_type: userType
+                    user_type: userType
                   });
                 } else {
                   res.status(401).send('User unauthorized');
