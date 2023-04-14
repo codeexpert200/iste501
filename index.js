@@ -100,8 +100,8 @@ app.post('/signin', (req, res) => {
                   const mentor = results[0];
                   res.status(200).json({
                     user_id: userId,
-                    mentor_first_name: doctor.doctor_first_name,
-                    mentor_last_name: doctor.doctor_last_name,
+                    mentor_first_name: mentor.mentor_first_name,
+                    mentor_last_name: mentor.mentor_last_name,
                     mentor_type: userType
                   });
                 } else {
