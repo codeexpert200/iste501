@@ -114,7 +114,7 @@ app.post('/verifyemail', (req, res) => {
     const bloodType = req.body.bloodType;
     const emergencyContactName = req.body.emergencyContactName;
     const emergencyContactPhone = req.body.emergencyContactPhone;
-    const query1 = 'INSERT INTO user_verify_email (user_verify_email_user_type, user_verify_email_token, user_verify_email_first_name, user_verify_email_last_name, user_verify_email_phone_number, user_verify_email_date_of_birth, user_verify_email_nationality, user_verify_email_gender, user_verify_email_blood_type, user_verify_email_emergency_contact_name, user_verify_email_emergency_contact_phone, user_verify_email_email, user_verify_email_password, user_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
+    const query1 = 'INSERT INTO user_verify_email (user_verify_email_user_type, user_verify_email_token, user_verify_email_first_name, user_verify_email_last_name, user_verify_email_phone_number, user_verify_email_date_of_birth, user_verify_email_nationality, user_verify_email_gender, user_verify_email_blood_type, user_verify_email_emergency_contact_name, user_verify_email_emergency_contact_phone, user_verify_email_email, user_verify_email_password, user_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
     connection.query(query1, [userType, token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
       if (error) {
         console.error(error);
