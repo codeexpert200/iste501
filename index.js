@@ -97,6 +97,7 @@ app.post('/signin', (req, res) => {
 });
 
 app.post('/verifyemail', (req, res) => {
+    const userType = req.body.userType;
     const token = crypto.randomBytes(20).toString('hex');
     const expiresIn = 1;
     const now = new Date();
@@ -113,8 +114,8 @@ app.post('/verifyemail', (req, res) => {
     const bloodType = req.body.bloodType;
     const emergencyContactName = req.body.emergencyContactName;
     const emergencyContactPhone = req.body.emergencyContactPhone;
-    const query1 = 'INSERT INTO patient_verify_email (patient_verify_email_token, patient_verify_email_first_name, patient_verify_email_last_name, patient_verify_email_phone_number, patient_verify_email_date_of_birth, patient_verify_email_nationality, patient_verify_email_gender, patient_verify_email_blood_type, patient_verify_email_emergency_contact_name, patient_verify_email_emergency_contact_phone, patient_verify_email_email, patient_verify_email_password, patient_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
-    connection.query(query1, [token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
+    const query1 = 'INSERT INTO user_verify_email (user_verify_email_user_type, user_verify_email_token, user_verify_email_first_name, user_verify_email_last_name, user_verify_email_phone_number, user_verify_email_date_of_birth, user_verify_email_nationality, user_verify_email_gender, user_verify_email_blood_type, user_verify_email_emergency_contact_name, user_verify_email_emergency_contact_phone, user_verify_email_email, user_verify_email_password, user_verify_email_timestamp_expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SHA2(?, 256), ?)';
+    connection.query(query1, [userType, token, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone, email, password, timestamp], (error, results) => {
       if (error) {
         console.error(error);
         res.status(500).send('Server error');
@@ -160,7 +161,7 @@ app.post('/signup', (req, res) => {
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  const query1 = 'SELECT * FROM patient_verify_email WHERE patient_verify_email_token = ? AND patient_verify_email_timestamp_expire > ?';
+  const query1 = 'SELECT * FROM user_verify_email WHERE user_verify_email_token = ? AND user_verify_email_timestamp_expire > ?';
   connection.query(query1, [token, timestamp], (error, results1) => {
     if (error) {
       console.error(error);
@@ -169,41 +170,86 @@ app.post('/signup', (req, res) => {
       res.status(400).send('Invalid or expired token');
     } else {
       const row = results1[0];
-      const email = row.patient_verify_email_email;
-      const password = row.patient_verify_email_password;
-      const firstName = row.patient_verify_email_first_name;
-      const lastName = row.patient_verify_email_last_name;
-      const phoneNumber = row.patient_verify_email_phone_number;
-      const dateOfBirth = row.patient_verify_email_date_of_birth;
-      const nationality = row.patient_verify_email_nationality;
-      const gender = row.patient_verify_email_gender;
-      const bloodType = row.patient_verify_email_blood_type;
-      const emergencyContactName = row.patient_verify_email_emergency_contact_name;
-      const emergencyContactPhone = row.patient_verify_email_emergency_contact_phone;
+      const userType = row.user_verify_email_user_type;
+      const email = row.user_verify_email_email;
+      const password = row.user_verify_email_password;
+      const firstName = row.user_verify_email_first_name;
+      const lastName = row.user_verify_email_last_name;
+      const phoneNumber = row.user_verify_email_phone_number;
+      const dateOfBirth = row.user_verify_email_date_of_birth;
+      const nationality = row.user_verify_email_nationality;
+      const gender = row.user_verify_email_gender;
+      const bloodType = row.user_verify_email_blood_type;
+      const emergencyContactName = row.user_verify_email_emergency_contact_name;
+      const emergencyContactPhone = row.user_verify_email_emergency_contact_phone;
       const query2 = 'INSERT INTO user (user_email, user_password, user_type) VALUES (?, ?, ?)';
-      connection.query(query2, [email, password, "Patient"], (error, results2) => {
+      connection.query(query2, [email, password, userType], (error, results2) => {
         if (error) {
           console.error(error);
           res.status(500).send('Server error');
         } else {
-          const userId = results2.insertId;
-          const query3 = 'INSERT INTO patient (user_id, patient_first_name, patient_last_name, patient_phone_number, patient_date_of_birth, patient_nationality, patient_gender, patient_blood_type, patient_emergency_contact_name, patient_emergency_contact_phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-          connection.query(query3, [userId, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone], (error, results3) => {
-            if (error) {
-              console.error(error);
-              res.status(500).send('Server error');
-            } else {
-              const query4 = 'DELETE FROM patient_verify_email WHERE patient_verify_email_email = ?';
-              connection.query(query4, [email], (error, results4) => {
+          if (userType == "Patient") {
+            const userId = results2.insertId;
+            const query3 = 'INSERT INTO patient (user_id, patient_first_name, patient_last_name, patient_phone_number, patient_date_of_birth, patient_nationality, patient_gender, patient_blood_type, patient_emergency_contact_name, patient_emergency_contact_phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            connection.query(query3, [userId, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender, bloodType, emergencyContactName, emergencyContactPhone], (error, results3) => {
+              if (error) {
+                console.error(error);
+                res.status(500).send('Server error');
+              } else {
+                const query4 = 'DELETE FROM user_verify_email WHERE user_verify_email_email = ?';
+                connection.query(query4, [email], (error, results4) => {
+                  if (error) {
+                    console.error(error);
+                    res.status(500).send('Server error');
+                  } else {
+                    res.status(200).send('Patient added');
+                  }
+                });
+              }
+            });
+          }
+          else {
+            if (userType == "Doctor") {
+              const userId = results2.insertId;
+              const query5 = 'INSERT INTO doctor (user_id, doctor_first_name, doctor_last_name, doctor_phone_number, doctor_date_of_birth, doctor_nationality, doctor_gender) VALUES (?, ?, ?, ?, ?, ?, ?)';
+              connection.query(query5, [userId, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender], (error, results5) => {
                 if (error) {
                   console.error(error);
                   res.status(500).send('Server error');
                 } else {
-                  res.status(200).send('Patient added');
+                  const query6 = 'DELETE FROM user_verify_email WHERE user_verify_email_email = ?';
+                  connection.query(query6, [email], (error, results6) => {
+                    if (error) {
+                      console.error(error);
+                      res.status(500).send('Server error');
+                    } else {
+                      res.status(200).send('Doctor added');
+                    }
+                  });
                 }
               });
             }
-          });
+            else {
+              const userId = results2.insertId;
+              const query7 = 'INSERT INTO mentor (user_id, mentor_first_name, mentor_last_name, mentor_phone_number, mentor_date_of_birth, mentor_nationality, mentor_gender) VALUES (?, ?, ?, ?, ?, ?, ?)';
+              connection.query(query7, [userId, firstName, lastName, phoneNumber, dateOfBirth, nationality, gender], (error, results7) => {
+                if (error) {
+                  console.error(error);
+                  res.status(500).send('Server error');
+                } else {
+                  const query8 = 'DELETE FROM user_verify_email WHERE user_verify_email_email = ?';
+                  connection.query(query8, [email], (error, results8) => {
+                    if (error) {
+                      console.error(error);
+                      res.status(500).send('Server error');
+                    } else {
+                      res.status(200).send('Mentor added');
+                    }
+                  });
+                }
+              });
+            }
+          }
         }
       });
     }
