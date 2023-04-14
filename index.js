@@ -68,26 +68,48 @@ app.post('/signin', (req, res) => {
             }
           });
         } else {
-          // Handle other user types here
-          const query3 = 'SELECT doctor_first_name, doctor_last_name FROM doctor WHERE user_id = ?';
-          connection.query(query3, [userId], (error, results) => {
-            if (error) {
-              console.error(error);
-              res.status(500).send('Server error');
-            } else {
-              if (results.length > 0) {
-                const doctor = results[0];
-                res.status(200).json({
-                  user_id: userId,
-                  doctor_first_name: doctor.doctor_first_name,
-                  doctor_last_name: doctor.doctor_last_name,
-                  user_type: userType
-                });
+          if (userType == 'Doctor') {
+            const query3 = 'SELECT doctor_first_name, doctor_last_name FROM doctor WHERE user_id = ?';
+            connection.query(query3, [userId], (error, results) => {
+              if (error) {
+                console.error(error);
+                res.status(500).send('Server error');
               } else {
-                res.status(401).send('User unauthorized');
+                if (results.length > 0) {
+                  const doctor = results[0];
+                  res.status(200).json({
+                    user_id: userId,
+                    doctor_first_name: doctor.doctor_first_name,
+                    doctor_last_name: doctor.doctor_last_name,
+                    user_type: userType
+                  });
+                } else {
+                  res.status(401).send('User unauthorized');
+                }
               }
-            }
-          });
+            });
+          }
+          else {
+            const query4 = 'SELECT mentor_first_name, mentor_last_name FROM mentor WHERE user_id = ?';
+            connection.query(query4, [userId], (error, results) => {
+              if (error) {
+                console.error(error);
+                res.status(500).send('Server error');
+              } else {
+                if (results.length > 0) {
+                  const mentor = results[0];
+                  res.status(200).json({
+                    user_id: userId,
+                    mentor_first_name: doctor.doctor_first_name,
+                    mentor_last_name: doctor.doctor_last_name,
+                    mentor_type: userType
+                  });
+                } else {
+                  res.status(401).send('User unauthorized');
+                }
+              }
+            });
+          }
         }
       } else {
         res.status(401).send('User unauthorized');
