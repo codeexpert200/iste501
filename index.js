@@ -23,18 +23,13 @@ const connection = mysql.createConnection({
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
 });
-connection.connect((err) => {
-  if (err) throw err;
-  console.log(`MySQL running on port 3306`);
-});
-
-const connection2 = mysql2.createConnection({
+const dbConfig = {
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-});
-connection2.connect((err) => {
+};
+connection.connect((err) => {
   if (err) throw err;
   console.log(`MySQL running on port 3306`);
 });
@@ -465,6 +460,7 @@ app.post('/gettemperature', (req, res) => {
 
 app.get('/getdoctor', async (req, res) => {
   try {
+    const connection2 = await mysql2.createConnection(dbConfig);
     const [rows] = await connection2.query('SELECT * FROM doctor');
     res.json(rows);
   } catch (error) {
@@ -475,6 +471,7 @@ app.get('/getdoctor', async (req, res) => {
 
 app.get('/getmentor', async (req, res) => {
   try {
+    const connection2 = await mysql2.createConnection(dbConfig);
     const [rows] = await connection2.query('SELECT * FROM mentor');
     res.json(rows);
   } catch (error) {
