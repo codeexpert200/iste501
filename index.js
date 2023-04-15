@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
+const mysql2 = require('mysql2/promise');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
@@ -23,6 +24,17 @@ const connection = mysql.createConnection({
   database: process.env.MYSQL_DATABASE,
 });
 connection.connect((err) => {
+  if (err) throw err;
+  console.log(`MySQL running on port 3306`);
+});
+
+const connection2 = mysql2.createConnection({
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+});
+connection2.connect((err) => {
   if (err) throw err;
   console.log(`MySQL running on port 3306`);
 });
@@ -453,7 +465,7 @@ app.post('/gettemperature', (req, res) => {
 
 app.get('/getdoctor', async (req, res) => {
   try {
-    const [rows] = await connection.query('SELECT * FROM doctor');
+    const [rows] = await connection2.query('SELECT * FROM doctor');
     res.json(rows);
   } catch (error) {
     console.error(error);
@@ -463,12 +475,11 @@ app.get('/getdoctor', async (req, res) => {
 
 app.get('/getmentor', async (req, res) => {
   try {
-    const [rows] = await connection.query('SELECT * FROM mentor');
+    const [rows] = await connection2.query('SELECT * FROM mentor');
     res.json(rows);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
