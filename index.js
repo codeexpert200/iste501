@@ -453,7 +453,6 @@ app.post('/gettemperature', (req, res) => {
 
 app.get('/getdoctor', async (req, res) => {
   try {
-    const connection = await mysql.createConnection(dbConfig);
     const [rows] = await connection.query('SELECT * FROM doctor');
     res.json(rows);
   } catch (error) {
@@ -464,7 +463,6 @@ app.get('/getdoctor', async (req, res) => {
 
 app.get('/getmentor', async (req, res) => {
   try {
-    const connection = await mysql.createConnection(dbConfig);
     const [rows] = await connection.query('SELECT * FROM mentor');
     res.json(rows);
   } catch (error) {
