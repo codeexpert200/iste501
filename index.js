@@ -500,6 +500,21 @@ app.post('/grantaccess', (req, res) => {
   });
 });
 
+app.post('/revokeaccess', (req, res) => {
+  const userId = req.body.userId;
+  const patientId = req.body.patientId;
+
+  const query1 = 'DELETE FROM patient_access WHERE user_id = ? AND patient_access_id = ?';
+  connection.query(query1, [patientId, userId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      res.status(200).send('Access Revoke Successful');
+    }
+  });
+});
+
 app.get('/getdoctor', async (req, res) => {
   try {
     const [rows] = await connection2.query('SELECT user_id, doctor_first_name, doctor_last_name FROM doctor');
