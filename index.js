@@ -485,12 +485,12 @@ app.post('/gettemperature', (req, res) => {
 
 app.post('/grantaccess', (req, res) => {
   const userId = req.body.userId;
-  const patientAccessId = req.body.patientAccessId;
+  const patientId = req.body.patientId;
   const patientAccessFirstName = req.body.patientAccessFirstName;
   const patientAccessLastName = req.body.patientAccessLastName;
 
   const query1 = 'INSERT INTO patient_access VALUES (?, ?, ?, ?)';
-  connection.query(query1, [userId, patientAccessId, patientAccessFirstName, patientAccessLastName], (error, results) => {
+  connection.query(query1, [patientId, userId, patientAccessFirstName, patientAccessLastName], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Server error');
