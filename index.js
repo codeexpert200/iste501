@@ -32,12 +32,7 @@ const dbConfig = {
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
 };
-connection.connect((err) => {
-  if (err) throw err;
-  console.log(`MySQL running on port 3306`);
-});
 
-const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Node.js running on port ${PORT}`);
 });
