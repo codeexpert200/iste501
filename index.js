@@ -532,11 +532,10 @@ app.get('/getmentor', async (req, res) => {
 
 app.get('/getmentor2', async (req, res) => {
   try {
-    const [rows] = await connection2.query('SELECT m.user_id, m.mentor_first_name, m.mentor_last_name FROM mentor m LEFT JOIN patient_access p ON m.user_id = p.patient_access_id');
+    const [rows] = await connection2.query('SELECT m.user_id, m.mentor_first_name, m.mentor_last_name FROM mentor m, patient_access p WHERE m.user_id = p.patient_access_id');
     res.json(rows);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
