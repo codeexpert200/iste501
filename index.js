@@ -512,7 +512,7 @@ app.get('/getdoctor', async (req, res) => {
 
 app.get('/getdoctor2', async (req, res) => {
   try {
-    const [rows] = await connection2.query('SELECT user_id, doctor_first_name, doctor_last_name FROM doctor');
+    const [rows] = await connection2.query('SELECT d.user_id, d.mentor_first_name, d.mentor_last_name FROM doctor d, patient_access p WHERE d.user_id = p.patient_access_id');
     res.json(rows);
   } catch (error) {
     console.error(error);
