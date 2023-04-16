@@ -483,6 +483,23 @@ app.post('/gettemperature', (req, res) => {
   });
 });
 
+app.post('/grantaccess', (req, res) => {
+  const patientId = req.body.patientId;
+  const patientAccessId = req.body._patientAccessId;
+  const patientAccessFirstName = req.body.patientAccessFirstName;
+  const patientAccessLastName = req.body.patientAccessLastName;
+
+  const query1 = 'INSERT INTO patient_access VALUES (?, ?, ?, ?)';
+  connection.query(query1, [patientId, patientAccessId, patientAccessFirstName, patientAccessLastName], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      res.status(200).send('Access Grant Successful');
+    }
+  });
+});
+
 app.get('/getdoctor', async (req, res) => {
   try {
     const [rows] = await connection2.query('SELECT * FROM doctor');
