@@ -485,7 +485,7 @@ app.post('/gettemperature', (req, res) => {
 
 app.post('/grantaccess', (req, res) => {
   const patientId = req.body.patientId;
-  const patientAccessId = req.body._patientAccessId;
+  const patientAccessId = req.body.patientAccessId;
   const patientAccessFirstName = req.body.patientAccessFirstName;
   const patientAccessLastName = req.body.patientAccessLastName;
 
