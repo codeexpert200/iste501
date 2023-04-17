@@ -438,6 +438,23 @@ app.post('/uploadmedicalrecord', upload.fields([{ name: 'pdf_data', maxCount: 1 
   });
 });
 
+app.delete('/deletemedicalrecord/:id', (req, res) => {
+  const recordId = parseInt(req.params.id, 10);
+  const query1 = 'DELETE FROM patient_medical_record WHERE patient_medical_record_id = ?';
+
+  connection.query(query1, [recordId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      if (results.affectedRows === 1) {
+        res.status(200).send('File deleted successfully');
+      } else {
+        res.status(404).send('File not found');
+      }
+    }
+  });
+});
 
 app.get('/getmedicalrecords/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
@@ -474,9 +491,6 @@ app.get('/downloadmedicalrecord/:id', (req, res) => {
     }
   });
 });
-
-
-
 
 app.post('/getheartrate', (req, res) => {
   const userId = req.body.userId;
