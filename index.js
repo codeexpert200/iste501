@@ -23,8 +23,8 @@ const connection = mysql.createPool({
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
   waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  connectionLimit: 100,
+  queueLimit: 50
 });
 
 const connection2 = mysql2.createPool({
