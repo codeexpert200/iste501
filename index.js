@@ -427,7 +427,7 @@ app.post('/uploadmedicalrecord', upload.fields([{ name: 'pdf_data', maxCount: 1 
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  const query1 = 'INSERT INTO patient_medical_record (patient_id, patient_medical_record_name, patient_medical_record_size, patient_medical_record_file, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)';
+  const query1 = 'INSERT INTO patient_medical_record (user_id, patient_medical_record_name, patient_medical_record_size, patient_medical_record_file, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)';
   connection.query(query1, [userId, fileName, fileSize, Buffer.from(pdfData, 'base64'), timestamp], (error, results) => {
     
     if (error) {
@@ -438,6 +438,45 @@ app.post('/uploadmedicalrecord', upload.fields([{ name: 'pdf_data', maxCount: 1 
     }
   });
 });
+
+app.get('/getmedicalrecords/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId);
+
+  const query1 = 'SELECT patient_medical_record_id, patient_medical_record_name, patient_medical_record_size, patient_medical_record_timestamp_create FROM patient_medical_record WHERE user_id = ?';
+
+  connection.query(query1, [userId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+app.get('/downloadmedicalrecord/:id', (req, res) => {
+  const recordId = parseInt(req.params.id, 10);
+  const query1 = 'SELECT patient_medical_record_file FROM patient_medical_record WHERE patient_medical_record_id = ?';
+
+  connection.query(query1, [recordId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      if (results.length === 1) {
+        const pdfBuffer = results[0].patient_medical_record_file;
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=medical_record_${recordId}.pdf`);
+        res.send(pdfBuffer);
+      } else {
+        res.status(404).send('File not found');
+      }
+    }
+  });
+});
+
+
+
 
 app.post('/getheartrate', (req, res) => {
   const userId = req.body.userId;
