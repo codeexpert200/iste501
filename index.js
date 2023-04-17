@@ -420,14 +420,14 @@ app.post('/resetpassword', async (req, res) => {
 
 app.post('/uploadmedicalrecord', upload.fields([{ name: 'pdf_data', maxCount: 1 }]), (req, res) => {
   const userId = parseInt(req.body.user_id);
-  const pdfData = req.files.pdf_data[0].buffer.toString('base64');
+  const pdfData = req.files.pdf_data[0].buffer; // Remove the .toString('base64') here
   const fileName = req.body.file_name;
   const fileSize = parseInt(req.body.file_size, 10);
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
   const query1 = 'INSERT INTO patient_medical_record (user_id, patient_medical_record_name, patient_medical_record_size, patient_medical_record_file, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)';
-  connection.query(query1, [userId, fileName, fileSize, Buffer.from(pdfData, 'base64'), timestamp], (error, results) => {
+  connection.query(query1, [userId, fileName, fileSize, pdfData, timestamp], (error, results) => {
     
     if (error) {
       console.error(error);
@@ -437,6 +437,7 @@ app.post('/uploadmedicalrecord', upload.fields([{ name: 'pdf_data', maxCount: 1 
     }
   });
 });
+
 
 app.get('/getmedicalrecords/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
