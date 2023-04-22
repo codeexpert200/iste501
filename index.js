@@ -629,12 +629,13 @@ app.post('/addReminder', (req, res) => {
   connection.query(
     'INSERT INTO patient_reminder (user_id, patient_reminders_name, patient_reminders_days, patient_reminders_time, patient_reminders_doses, patient_reminders_taken) VALUES (?, ?, ?, ?, ?, ?)',
     [userId, name, JSON.stringify(days), time, doses, 0],
-    (error) => {
+    (error, result) => {
       if (error) {
+        console.error('Error:', error);
         res.status(500).send('Error');
       } else {
         res.status(200).send('Success');
       }
-    }
+    }    
   );
 });
