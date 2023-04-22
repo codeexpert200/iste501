@@ -607,3 +607,34 @@ app.get('/getmentor2', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+app.get('/getReminders', (req, res) => {
+  const userId = req.query.userId;
+
+  connection.query(
+    'SELECT * FROM patient_reminder WHERE user_id = ?',
+    [userId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+      } else {
+        res.status(200).send(JSON.stringify(results));
+      }
+    }
+  );
+});
+
+app.post('/addReminder', (req, res) => {
+  const { userId, name, days, time, doses } = req.body;
+  connection.query(
+    'INSERT INTO patient_reminder (user_id, patient_reminders_name, patient_reminders_days, patient_reminders_time, patient_reminders_doses, patient_reminders_taken) VALUES (?, ?, ?, ?, ?, ?)',
+    [userId, name, JSON.stringify(days), time, doses, 0],
+    (error) => {
+      if (error) {
+        res.status(500).send('Error');
+      } else {
+        res.status(200).send('Success');
+      }
+    }
+  );
+});
