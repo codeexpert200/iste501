@@ -640,6 +640,39 @@ app.post('/addReminder', (req, res) => {
   );
 });
 
+app.patch('/updateReminder/:id', (req, res) => {
+  const reminderId = req.params.id;
+  const { taken } = req.body;
+
+  connection.query(
+    'UPDATE patient_reminder SET patient_reminder_taken = ? WHERE patient_reminder_id = ?',
+    [taken, reminderId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+      } else {
+        res.status(200).send('Success');
+      }
+    }
+  );
+});
+
+app.delete('/deleteReminder/:id', (req, res) => {
+  const reminderId = req.params.id;
+
+  connection.query(
+    'DELETE FROM patient_reminder WHERE patient_reminder_id = ?',
+    [reminderId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+      } else {
+        res.status(200).send('Success');
+      }
+    }
+  );
+});
+
 function daysToBitmask(days) {
   let bitmask = 0;
   for (let i = 0; i < days.length; i++) {
