@@ -9,6 +9,7 @@ const path = require('path');
 const sgMail = require('@sendgrid/mail');
 const multer = require('multer');
 const upload = multer();
+const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
