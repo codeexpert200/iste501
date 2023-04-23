@@ -613,7 +613,7 @@ app.post('/addReminder', (req, res) => {
   const { userId, name, days, time, doses } = req.body;
   connection.query(
     'INSERT INTO patient_reminder (user_id, patient_reminder_name, patient_reminder_days, patient_reminder_time, patient_reminder_doses, patient_reminder_taken) VALUES (?, ?, ?, ?, ?, ?)',
-    [userId, name, daysAbbreviationsToBitmask(days), time, doses, 0],
+    [userId, name, daysToBitmask(days), time, doses, 0],
     (error, result) => {
       if (error) {
         console.error('Error:', error);
@@ -658,13 +658,16 @@ app.delete('/deleteReminder/:id', (req, res) => {
   );
 });
 
-function daysAbbreviationsToBitmask(days) {
+function daysToBitmask(days) {
+  const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   let bitmask = 0;
-  for (let i = 0; i < dayAbbreviations.length; i++) {
-    if (days.includes(dayAbbreviations[i])) {
-      bitmask |= 1 << i;
+  for (let i = 0; i < days.length; i++) {
+    const dayIndex = dayAbbreviations.indexOf(days[i]);
+    if (dayIndex !== -1) {
+      bitmask |= 1 << dayIndex;
     }
   }
   return bitmask;
 }
+
 
