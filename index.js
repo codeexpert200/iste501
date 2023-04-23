@@ -658,12 +658,13 @@ app.delete('/deleteReminder/:id', (req, res) => {
   );
 });
 
-function daysAbbreviationsToBitmask(daysAbbreviations) {
+function daysAbbreviationsToBitmask(days) {
   let bitmask = 0;
   for (let i = 0; i < dayAbbreviations.length; i++) {
-    if (daysAbbreviations.includes(dayAbbreviations[i])) {
+    if (days.includes(dayAbbreviations[i])) {
       bitmask |= 1 << i;
     }
   }
   return bitmask;
 }
+
