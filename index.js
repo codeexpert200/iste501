@@ -675,12 +675,14 @@ app.delete('/deleteReminder/:id', (req, res) => {
 
 function daysToBitmask(days) {
   const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const daysArray = days.split(',').map((day) => day.trim());
   let bitmask = 0;
   for (let i = 0; i < dayAbbreviations.length; i++) {
-    if (days.includes(dayAbbreviations[i])) {
+    if (daysArray.includes(dayAbbreviations[i])) {
       bitmask |= 1 << i;
     }
   }
   return bitmask;
 }
+
 
