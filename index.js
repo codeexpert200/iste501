@@ -628,7 +628,7 @@ app.post('/addReminder', (req, res) => {
   const { userId, name, days, time, doses } = req.body;
   connection.query(
     'INSERT INTO patient_reminder (user_id, patient_reminder_name, patient_reminder_days, patient_reminder_time, patient_reminder_doses, patient_reminder_taken) VALUES (?, ?, ?, ?, ?, ?)',
-    [userId, name, JSON.stringify(days), time, doses, 0],
+    [userId, name, daysToBitmask(days), time, doses, 0],
     (error, result) => {
       if (error) {
         console.error('Error:', error);
@@ -639,3 +639,13 @@ app.post('/addReminder', (req, res) => {
     }    
   );
 });
+
+function daysToBitmask(days) {
+  let bitmask = 0;
+  for (let i = 0; i < days.length; i++) {
+    if (days[i]) {
+      bitmask |= 1 << i;
+    }
+  }
+  return bitmask;
+}
