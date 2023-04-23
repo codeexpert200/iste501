@@ -609,6 +609,22 @@ app.get('/getmentor2', async (req, res) => {
   }
 });
 
+app.get('/getReminders', (req, res) => {
+  const userId = req.query.userId;
+
+  connection.query(
+    'SELECT * FROM patient_reminder WHERE user_id = ?',
+    [userId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+      } else {
+        res.status(200).send(JSON.stringify(results));
+      }
+    }
+  );
+});
+
 app.post('/addReminder', (req, res) => {
   const { userId, name, days, time, doses } = req.body;
   connection.query(
@@ -669,5 +685,3 @@ function daysToBitmask(days) {
   }
   return bitmask;
 }
-
-
