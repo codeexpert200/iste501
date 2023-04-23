@@ -619,6 +619,9 @@ app.get('/getReminders', (req, res) => {
       if (error) {
         res.status(500).send('Error');
       } else {
+        results.forEach((reminder) => {
+          reminder.patient_reminder_days = JSON.parse(reminder.patient_reminder_days);
+        });
         res.status(200).send(JSON.stringify(results));
       }
     }
@@ -627,9 +630,11 @@ app.get('/getReminders', (req, res) => {
 
 app.post('/addReminder', (req, res) => {
   const { userId, name, days, time, doses } = req.body;
+  const daysJson = JSON.stringify(days);
+
   connection.query(
     'INSERT INTO patient_reminder (user_id, patient_reminder_name, patient_reminder_days, patient_reminder_time, patient_reminder_doses, patient_reminder_taken) VALUES (?, ?, ?, ?, ?, ?)',
-    [userId, name, days, time, doses, 0],
+    [userId, name, daysJson, time, doses, 0],
     (error, result) => {
       if (error) {
         console.error('Error:', error);
