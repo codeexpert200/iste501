@@ -678,15 +678,3 @@ app.delete('/deleteReminder/:id', (req, res) => {
     }
   );
 });
-
-function daysToBitmask(days) {
-  const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  let bitmask = 0;
-  for (let i = 0; i < days.length; i++) {
-    const dayIndex = dayAbbreviations.indexOf(days[i]);
-    if (dayIndex !== -1) {
-      bitmask |= 1 << dayIndex;
-    }
-  }
-  return bitmask;
-}
