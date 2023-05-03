@@ -595,3 +595,19 @@ app.delete('/deleteReminder/:id', async (req, res) => {
     res.status(500).send('Error');
   }
 });
+
+app.patch('/updateAccount/:id', async (req, res) => {
+  const userId = req.params.id;
+  const { password, phoneNumber, emergencyContactName, emergencyContactPhone } = req.body;
+
+  try {
+    await queryDatabase('UPDATE user SET user_password = SHA2(?, 256) WHERE user_id = ?', [password, userId]);
+    await queryDatabase(
+      'UPDATE patient SET patient_phone_number = ?, patient_emergency_contact_name = ?, patient_emergency_contact_phone = ? WHERE user_id = ?',
+      [phoneNumber, emergencyContactName, emergencyContactPhone, userId]
+    );
+    res.status(200).send('Success');
+  } catch (error) {
+    res.status(500).send('Error');
+  }
+});
