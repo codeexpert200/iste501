@@ -682,6 +682,11 @@ app.delete('/deleteReminder/:id', (req, res) => {
 app.patch('/updateAccount/:id', (req, res) => {
   const userId = req.params.id;
   const { password, phoneNumber, emergencyContactName, emergencyContactPhone } = req.body;
+  console.log(userId);
+  console.log(password);
+  console.log(phoneNumber);
+  console.log(emergencyContactName);
+  console.log(emergencyContactPhone);
 
   connection.query(
     'UPDATE user SET user_password = SHA2(?, 256) WHERE user_id = ?',
