@@ -705,3 +705,19 @@ app.patch('/updateAccount/:id', (req, res) => {
     }
   );
 });
+
+app.get('/getPatientDetails', (req, res) => {
+  const userId = req.query.userId;
+
+  connection.query(
+    'SELECT user.*, patient.* FROM user INNER JOIN patient ON user.user_id = patient.user_id WHERE user.user_id = ?',
+    [userId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+      } else {
+        res.status(200).send(JSON.stringify(results[0]));
+      }
+    }
+  );
+});
