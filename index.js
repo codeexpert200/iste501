@@ -679,9 +679,8 @@ app.delete('/deleteReminder/:id', (req, res) => {
   );
 });
 
-app.patch('/updateAccount/:id', (req, res) => {
-  const userId = req.params.id;
-  const { password, phoneNumber, emergencyContactName, emergencyContactPhone } = req.body;
+app.post('/updateAccount', (req, res) => {
+  const { userId, password, phoneNumber, emergencyContactName, emergencyContactPhone } = req.body;
   console.log(userId);
   console.log(password);
   console.log(phoneNumber);
