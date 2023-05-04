@@ -538,7 +538,7 @@ app.post('/gettemperature', (req, res) => {
 });
 
 app.post('/storeheartrate', (req, res) => {
-  const userId = req.body.userId;
+  const userId = parseInt(req.body.user_id);
   const heartRate = req.body.heartRate;
   const now = new Date();
     now.setUTCHours(now.getUTCHours() + 4);
@@ -562,7 +562,7 @@ app.post('/storeheartrate', (req, res) => {
 });
 
   app.post('/storetemperature', (req, res) => {
-    const userId = req.body.userId;
+    const userId = parseInt(req.body.user_id);
     const temperature = req.body.temperature;
     const now = new Date();
     now.setUTCHours(now.getUTCHours() + 4);
