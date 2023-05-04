@@ -540,8 +540,6 @@ app.post('/gettemperature', (req, res) => {
 app.post('/storeheartrate', (req, res) => {
   const userId = parseInt(req.body.userId);
   const heartRate = req.body.heartRate;
-  console.log(userId);
-  console.log(heartRate);
   const now = new Date();
     now.setUTCHours(now.getUTCHours() + 4);
     const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
