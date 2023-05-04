@@ -537,6 +537,41 @@ app.post('/gettemperature', (req, res) => {
   });
 });
 
+  app.post('/storeHeartRate', (req, res) => {
+    const userId = req.body.userId;
+    const heartRate = req.body.heartRate;
+    const now = new Date();
+    now.setUTCHours(now.getUTCHours() + 4 + expiresIn);
+    const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
+    const query = 'INSERT INTO patient_heart_rate (patient_id, patient_heart_rate_value, patient_heart_rate_timestamp) VALUES (?, ?, ?)';
+    connection.query(query, [userId, heartRate, timestamp], (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+      } else {
+        res.status(200).send('Heart rate data stored');
+      }
+    });
+  });
+
+  app.post('/storeTemperature', (req, res) => {
+    const userId = req.body.userId;
+    const temperature = req.body.temperature;
+    const now = new Date();
+    now.setUTCHours(now.getUTCHours() + 4 + expiresIn);
+    const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
+    const query = 'INSERT INTO patient_temperature (patient_id, patient_temperature_value, patient_temperature_timestamp) VALUES (?, ?, ?)';
+    connection.query(query, [userId, temperature, timestamp], (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+      } else {
+        res.status(200).send('Temperature data stored');
+      }
+    });
+  });
+
+
 app.post('/grantaccess', (req, res) => {
   const userId = req.body.userId;
   const patientId = req.body.patientId;
