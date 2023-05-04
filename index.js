@@ -537,40 +537,53 @@ app.post('/gettemperature', (req, res) => {
   });
 });
 
-  app.post('/storeHeartRate', (req, res) => {
-    const userId = req.body.userId;
-    const heartRate = req.body.heartRate;
-    const now = new Date();
+app.post('/storeheartrate', (req, res) => {
+  const userId = req.body.userId;
+  const heartRate = req.body.heartRate;
+  const now = new Date();
     now.setUTCHours(now.getUTCHours() + 4 + expiresIn);
     const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-    const query = 'INSERT INTO patient_heart_rate (patient_id, patient_heart_rate_value, patient_heart_rate_timestamp) VALUES (?, ?, ?)';
-    connection.query(query, [userId, heartRate, timestamp], (error, results) => {
-      if (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-      } else {
-        res.status(200).send('Heart rate data stored');
-      }
-    });
-  });
+  const query1 = `
+    INSERT INTO patient_heart_rate (patient_id, patient_heart_rate_value, patient_heart_rate_timestamp)
+    VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      patient_heart_rate_value = VALUES(patient_heart_rate_value),
+      patient_heart_rate_timestamp = VALUES(patient_heart_rate_timestamp)
+  `;
 
-  app.post('/storeTemperature', (req, res) => {
+  connection.query(query1, [userId, heartRate, timestamp], (error) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      res.status(200).send('Heart rate data updated successfully');
+    }
+  });
+});
+
+  app.post('/storetemperature', (req, res) => {
     const userId = req.body.userId;
     const temperature = req.body.temperature;
     const now = new Date();
     now.setUTCHours(now.getUTCHours() + 4 + expiresIn);
     const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-    const query = 'INSERT INTO patient_temperature (patient_id, patient_temperature_value, patient_temperature_timestamp) VALUES (?, ?, ?)';
-    connection.query(query, [userId, temperature, timestamp], (error, results) => {
+    const query1 = `
+      INSERT INTO patient_temperature (patient_id, patient_temperature_value, patient_temperature_timestamp)
+      VALUES (?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        patient_temperature_value = VALUES(patient_temperature_value),
+        patient_temperature_timestamp = VALUES(patient_temperature_timestamp)
+    `;
+
+    connection.query(query1, [userId, temperature, timestamp], (error) => {
       if (error) {
         console.error(error);
         res.status(500).send('Server error');
       } else {
-        res.status(200).send('Temperature data stored');
+        res.status(200).send('Temperature data updated successfully');
       }
     });
   });
-
 
 app.post('/grantaccess', (req, res) => {
   const userId = req.body.userId;
