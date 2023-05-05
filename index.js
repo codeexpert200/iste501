@@ -8,7 +8,6 @@ const crypto = require('crypto');
 const path = require('path');
 const sgMail = require('@sendgrid/mail');
 const multer = require('multer');
-const { error } = require('console');
 const upload = multer();
 const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -628,11 +627,9 @@ app.get('/getdoctor', async (req, res) => {
   }
 });
 
-app.post('/getdoctor2', async (req, res) => {
-  const userId = req.body.userId;
+app.get('/getdoctor2', async (req, res) => {
   try {
-    const query1 = 'SELECT d.user_id, d.doctor_first_name, d.doctor_last_name FROM doctor d, patient_access p WHERE d.user_id = p.patient_access_id AND p.user_id = ?';
-    const [rows] = await connection2.query(query1, [userId]);
+    const [rows] = await connection2.query('SELECT d.user_id, d.doctor_first_name, d.doctor_last_name FROM doctor d, patient_access p WHERE d.user_id = p.patient_access_id');
     res.json(rows);
   } catch (error) {
     console.error(error);
@@ -650,11 +647,10 @@ app.get('/getmentor', async (req, res) => {
   }
 });
 
-app.post('/getmentor2', async (req, res) => {
-  const userId = req.body.userId;
+app.get('/getmentor2', async (req, res) => {
   try {
-    const query1 = 'SELECT m.user_id, m.mentor_first_name, m.mentor_last_name FROM mentor m, patient_access p WHERE m.user_id = p.patient_access_id AND p.user_id = ?';
-    const [rows] = await connection2.query(query1, [userId]);
+    const [rows] = await connection2.query('SELECT m.user_id, m.mentor_first_name, m.mentor_last_name FROM mentor m, patient_access p WHERE m.user_id = p.patient_access_id');
+    res.json(rows);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
