@@ -867,14 +867,15 @@ app.get('/getDoctorDetails', (req, res) => {
 
 app.post('/uploadmedicalprescription', upload.fields([{ name: 'pdf_data', maxCount: 1 }]), (req, res) => {
   const userId = parseInt(req.body.user_id);
+  const patientId = parseInt(req.body.patient_id);
   const pdfData = req.files.pdf_data[0].buffer; // Remove the .toString('base64') here
   const fileName = req.body.file_name;
   const fileSize = parseInt(req.body.file_size, 10);
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
-  const query1 = 'INSERT INTO doctor_medical_prescription (user_id, doctor_medical_prescription_name, doctor_medical_prescription_size, doctor_medical_prescription_file, doctor_medical_prescription_timestamp_create) VALUES (?, ?, ?, ?, ?)';
-  connection.query(query1, [userId, fileName, fileSize, pdfData, timestamp], (error, results) => {
+  const query1 = 'INSERT INTO doctor_medical_prescription (user_id, patient_id, doctor_medical_prescription_name, doctor_medical_prescription_size, doctor_medical_prescription_file, doctor_medical_prescription_timestamp_create) VALUES (?, ?, ?, ?, ?, ?)';
+  connection.query(query1, [userId, patient_id, fileName, fileSize, pdfData, timestamp], (error, results) => {
     
     if (error) {
       console.error(error);
