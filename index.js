@@ -662,7 +662,7 @@ app.post('/getpatients', async (req, res) => {
 
   try {
     const query = 'SELECT * FROM patient_access WHERE patient_access_id = ?';
-    const { rows } = await connection2.query(query, [doctorId]);
+    const [rows] = await connection2.query(query, [doctorId]);
     res.status(200).json(rows);
   } catch (err) {
     console.error(err);
