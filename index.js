@@ -879,7 +879,7 @@ app.get('/getmedicalprescriptions/:userId', (req, res) => {
 
 app.get('/downloadmedicalprescription/:id', (req, res) => {
   const recordId = parseInt(req.params.id, 10);
-  const query1 = 'SELECT download_medical_prescription_file FROM doctor_medical_prescription WHERE doctor_medical_prescription_id = ?';
+  const query1 = 'SELECT doctor_medical_prescription_file FROM doctor_medical_prescription WHERE doctor_medical_prescription_id = ?';
 
   connection.query(query1, [recordId], (error, results) => {
     if (error) {
