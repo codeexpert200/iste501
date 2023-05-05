@@ -494,7 +494,7 @@ app.get('/downloadmedicalrecord/:id', (req, res) => {
 });
 
 app.post('/getheartrate', (req, res) => {
-  const userId = req.body.userId;
+  const userId = parseInt(req.body.userId);
 
   const query1 = 'SELECT patient_heart_rate_value, patient_heart_rate_timestamp FROM patient_heart_rate WHERE patient_id = ?';
   connection.query(query1, [userId], (error, results) => {
@@ -516,7 +516,7 @@ app.post('/getheartrate', (req, res) => {
 });
 
 app.post('/gettemperature', (req, res) => {
-  const userId = req.body.userId;
+  const userId = parseInt(req.body.userId);
 
   const query1 = 'SELECT patient_temperature_value, patient_temperature_timestamp FROM patient_temperature WHERE patient_id = ?';
   connection.query(query1, [userId], (error, results) => {
