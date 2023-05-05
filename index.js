@@ -889,7 +889,7 @@ app.get('/downloadmedicalprescription/:id', (req, res) => {
       if (results.length === 1) {
         const pdfBuffer = results[0].patient_medical_record_file;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=medical_record_${recordId}.pdf`);
+        res.setHeader('Content-Disposition', `attachment; filename=medical_prescription_${recordId}.pdf`);
         res.send(pdfBuffer);
       } else {
         res.status(404).send('File not found');
