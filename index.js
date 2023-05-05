@@ -875,7 +875,7 @@ app.post('/uploadmedicalprescription', upload.fields([{ name: 'pdf_data', maxCou
   now.setUTCHours(now.getUTCHours() + 4);
   const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
   const query1 = 'INSERT INTO doctor_medical_prescription (user_id, patient_id, doctor_medical_prescription_name, doctor_medical_prescription_size, doctor_medical_prescription_file, doctor_medical_prescription_timestamp_create) VALUES (?, ?, ?, ?, ?, ?)';
-  connection.query(query1, [userId, patient_id, fileName, fileSize, pdfData, timestamp], (error, results) => {
+  connection.query(query1, [userId, patientId, fileName, fileSize, pdfData, timestamp], (error, results) => {
     
     if (error) {
       console.error(error);
@@ -908,6 +908,21 @@ app.get('/getmedicalprescriptions/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
 
   const query1 = 'SELECT doctor_medical_prescription_id, doctor_medical_prescription_name, doctor_medical_prescription_size, doctor_medical_prescription_timestamp_create FROM doctor_medical_prescription WHERE user_id = ?';
+
+  connection.query(query1, [userId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+app.get('/getmedicalprescriptions2/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId);
+
+  const query1 = 'SELECT doctor_medical_prescription_id, doctor_medical_prescription_name, doctor_medical_prescription_size, doctor_medical_prescription_timestamp_create FROM doctor_medical_prescription WHERE patient_id = ?';
 
   connection.query(query1, [userId], (error, results) => {
     if (error) {
