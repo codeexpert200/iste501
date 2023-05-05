@@ -767,6 +767,31 @@ app.post('/updateAccount', (req, res) => {
   );
 });
 
+app.post('/updateAccountMentor', (req, res) => {
+  const { userId, password, phoneNumber } = req.body;
+  connection.query(
+    'UPDATE user SET user_password = SHA2(?, 256) WHERE user_id = ?',
+    [password, userId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+        return;
+      }
+      connection.query(
+        'UPDATE mentor SET mentor_phone_number = ? WHERE user_id = ?',
+        [phoneNumber, userId],
+        (error, results) => {
+          if (error) {
+            res.status(500).send('Error');
+          } else {
+            res.status(200).send('Success');
+          }
+        }
+      );
+    }
+  );
+});
+
 app.get('/getPatientDetails', (req, res) => {
   const userId = req.query.userId;
 
@@ -781,4 +806,94 @@ app.get('/getPatientDetails', (req, res) => {
       }
     }
   );
+});
+
+app.get('/getMentorDetails', (req, res) => {
+  const userId = req.query.userId;
+
+  connection.query(
+    'SELECT user.*, mentor.* FROM user INNER JOIN mentor ON user.user_id = mentor.user_id WHERE user.user_id = ?',
+    [userId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+      } else {
+        res.status(200).send(JSON.stringify(results[0]));
+      }
+    }
+  );
+});
+
+app.post('/uploadmedicalprescription', upload.fields([{ name: 'pdf_data', maxCount: 1 }]), (req, res) => {
+  const userId = parseInt(req.body.user_id);
+  const pdfData = req.files.pdf_data[0].buffer; // Remove the .toString('base64') here
+  const fileName = req.body.file_name;
+  const fileSize = parseInt(req.body.file_size, 10);
+  const now = new Date();
+  now.setUTCHours(now.getUTCHours() + 4);
+  const timestamp = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')} ${String(now.getUTCHours()).padStart(2, '0')}:${String(now.getUTCMinutes()).padStart(2, '0')}:${String(now.getUTCSeconds()).padStart(2, '0')}`;
+  const query1 = 'INSERT INTO patient_medical_record (user_id, patient_medical_record_name, patient_medical_record_size, patient_medical_record_file, patient_medical_record_timestamp_create) VALUES (?, ?, ?, ?, ?)';
+  connection.query(query1, [userId, fileName, fileSize, pdfData, timestamp], (error, results) => {
+    
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      res.status(200).send('File uploaded successfully');
+    }
+  });
+});
+
+app.delete('/deletemedicalprescription/:id', (req, res) => {
+  const recordId = parseInt(req.params.id, 10);
+  const query1 = 'DELETE FROM patient_medical_record WHERE patient_medical_record_id = ?';
+
+  connection.query(query1, [recordId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      if (results.affectedRows === 1) {
+        res.status(200).send('File deleted successfully');
+      } else {
+        res.status(404).send('File not found');
+      }
+    }
+  });
+});
+
+app.get('/getmedicalprescriptions/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId);
+
+  const query1 = 'SELECT patient_medical_record_id, patient_medical_record_name, patient_medical_record_size, patient_medical_record_timestamp_create FROM patient_medical_record WHERE user_id = ?';
+
+  connection.query(query1, [userId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+app.get('/downloadmedicalprescription/:id', (req, res) => {
+  const recordId = parseInt(req.params.id, 10);
+  const query1 = 'SELECT patient_medical_record_file FROM patient_medical_record WHERE patient_medical_record_id = ?';
+
+  connection.query(query1, [recordId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      if (results.length === 1) {
+        const pdfBuffer = results[0].patient_medical_record_file;
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=medical_record_${recordId}.pdf`);
+        res.send(pdfBuffer);
+      } else {
+        res.status(404).send('File not found');
+      }
+    }
+  });
 });
