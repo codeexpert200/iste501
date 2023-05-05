@@ -792,6 +792,31 @@ app.post('/updateAccountMentor', (req, res) => {
   );
 });
 
+app.post('/updateAccountDoctor', (req, res) => {
+  const { userId, password, phoneNumber } = req.body;
+  connection.query(
+    'UPDATE user SET user_password = SHA2(?, 256) WHERE user_id = ?',
+    [password, userId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+        return;
+      }
+      connection.query(
+        'UPDATE doctor SET doctor_phone_number = ? WHERE user_id = ?',
+        [phoneNumber, userId],
+        (error, results) => {
+          if (error) {
+            res.status(500).send('Error');
+          } else {
+            res.status(200).send('Success');
+          }
+        }
+      );
+    }
+  );
+});
+
 app.get('/getPatientDetails', (req, res) => {
   const userId = req.query.userId;
 
@@ -813,6 +838,22 @@ app.get('/getMentorDetails', (req, res) => {
 
   connection.query(
     'SELECT user.*, mentor.* FROM user INNER JOIN mentor ON user.user_id = mentor.user_id WHERE user.user_id = ?',
+    [userId],
+    (error, results) => {
+      if (error) {
+        res.status(500).send('Error');
+      } else {
+        res.status(200).send(JSON.stringify(results[0]));
+      }
+    }
+  );
+});
+
+app.get('/getDoctorDetails', (req, res) => {
+  const userId = req.query.userId;
+
+  connection.query(
+    'SELECT user.*, doctor.* FROM user INNER JOIN doctor ON user.user_id = doctor.user_id WHERE user.user_id = ?',
     [userId],
     (error, results) => {
       if (error) {
