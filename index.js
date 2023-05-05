@@ -630,7 +630,7 @@ app.get('/getdoctor', async (req, res) => {
 app.get('/getdoctor2', async (req, res) => {
   const patientId = req.query.patientId;
   try {
-    const [rows] = await connection2.query('SELECT d.user_id, d.doctor_first_name, d.doctor_last_name FROM doctor d, patient_access p WHERE d.user_id = p.patient_access_id AND p.patient_id = ?', [patientId]);
+    const [rows] = await connection2.query('SELECT d.user_id, d.doctor_first_name, d.doctor_last_name FROM doctor d, patient_access p WHERE d.user_id = p.patient_access_id AND p.user_id = ?', [patientId]);
     res.json(rows);
   } catch (error) {
     console.error(error);
@@ -651,7 +651,7 @@ app.get('/getmentor', async (req, res) => {
 app.get('/getmentor2', async (req, res) => {
   const patientId = req.query.patientId;
   try {
-    const [rows] = await connection2.query('SELECT m.user_id, m.mentor_first_name, m.mentor_last_name FROM mentor m, patient_access p WHERE m.user_id = p.patient_access_id AND p.patient_id = ?', [patientId]);
+    const [rows] = await connection2.query('SELECT m.user_id, m.mentor_first_name, m.mentor_last_name FROM mentor m, patient_access p WHERE m.user_id = p.patient_access_id AND p.user_id = ?', [patientId]);
     res.json(rows);
   } catch (error) {
     console.error(error);
