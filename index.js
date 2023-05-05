@@ -887,7 +887,7 @@ app.get('/downloadmedicalprescription/:id', (req, res) => {
       res.status(500).send('Server error');
     } else {
       if (results.length === 1) {
-        const pdfBuffer = results[0].patient_medical_record_file;
+        const pdfBuffer = results[0].doctor_medical_prescription_file;
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=medical_prescription_${recordId}.pdf`);
         res.send(pdfBuffer);
