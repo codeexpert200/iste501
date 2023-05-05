@@ -660,11 +660,11 @@ app.get('/getmentor2', async (req, res) => {
 });
 
 app.post('/getpatients', async (req, res) => {
-  const doctorId = req.body.doctor_id;
+  const userId = req.body.doctor_id;
 
   try {
     const query = 'SELECT * FROM patient_access pa, patient p WHERE patient_access_id = ? AND pa.user_id = p.user_id';
-    const [rows] = await connection2.query(query, [doctorId]);
+    const [rows] = await connection2.query(query, [userId]);
     res.status(200).json(rows);
   } catch (err) {
     console.error(err);
