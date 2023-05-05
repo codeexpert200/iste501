@@ -657,6 +657,19 @@ app.get('/getmentor2', async (req, res) => {
   }
 });
 
+app.post('/getpatients', async (req, res) => {
+  const doctorId = req.body.doctor_id;
+
+  try {
+    const query = 'SELECT * FROM patient_access WHERE patient_access_id = ?';
+    const { rows } = await connection2.query(query, [doctorId]);
+    res.status(200).json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'An error occurred while fetching patients' });
+  }
+});
+
 app.get('/getReminders', (req, res) => {
   const userId = req.query.userId;
 
