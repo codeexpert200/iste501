@@ -628,7 +628,7 @@ app.get('/getdoctor', async (req, res) => {
   }
 });
 
-app.get('/getdoctor2', async (req, res) => {
+app.post('/getdoctor2', async (req, res) => {
   const userId = req.body.userId;
   try {
     const query1 = 'SELECT d.user_id, d.doctor_first_name, d.doctor_last_name FROM doctor d, patient_access p WHERE d.user_id = p.patient_access_id AND p.user_id = ?';
@@ -650,7 +650,7 @@ app.get('/getmentor', async (req, res) => {
   }
 });
 
-app.get('/getmentor2', async (req, res) => {
+app.post('/getmentor2', async (req, res) => {
   const userId = req.body.userId;
   try {
     const query1 = 'SELECT m.user_id, m.mentor_first_name, m.mentor_last_name FROM mentor m, patient_access p WHERE m.user_id = p.patient_access_id AND p.user_id = ?';
