@@ -660,7 +660,7 @@ app.get('/getmentor2', async (req, res) => {
 });
 
 app.post('/getpatients', async (req, res) => {
-  const userId = req.body.doctor_id;
+  const userId = req.body.user_id;
 
   try {
     const query = 'SELECT * FROM patient_access pa, patient p WHERE patient_access_id = ? AND pa.user_id = p.user_id';
