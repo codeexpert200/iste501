@@ -906,10 +906,10 @@ app.delete('/deletemedicalprescription/:id', (req, res) => {
 
 app.get('/getmedicalprescriptions/:userId', (req, res) => {
   const userId = parseInt(req.params.userId);
+  const patientId = parseInt(req.query.patientId);
+  const query1 = 'SELECT doctor_medical_prescription_id, doctor_medical_prescription_name, doctor_medical_prescription_size, doctor_medical_prescription_timestamp_create FROM doctor_medical_prescription WHERE user_id = ? AND patient_id = ?';
 
-  const query1 = 'SELECT doctor_medical_prescription_id, doctor_medical_prescription_name, doctor_medical_prescription_size, doctor_medical_prescription_timestamp_create FROM doctor_medical_prescription WHERE user_id = ?';
-
-  connection.query(query1, [userId], (error, results) => {
+  connection.query(query1, [userId, patientId], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Server error');
