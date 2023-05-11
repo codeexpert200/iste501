@@ -972,7 +972,7 @@ app.post('/sendheartsalert', (req, res) => {
       res.status(500).send('Server error');
     } else {
       const emails = results.map(row => row.email);
-
+      console.log(emails);
       const msg = {
         from: 'medivance.no.reply@gmail.com',
         to: emails,
