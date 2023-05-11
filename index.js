@@ -966,17 +966,45 @@ app.post('/sendheartsalert', (req, res) => {
     WHERE pa.user_id = ?;
   `;
 
+  const query2 = `
+    SELECT patient_first_name, patient_last_name
+    FROM patient
+    WHERE user_id = ?;
+  `;
+
   connection.query(query1, [userId], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Server error');
     } else {
-      const emails = results.map(row => row.user_email);
-      const msg = {
+      connection.query(query2, [userId], (error, patientResults) => {
+        if (error) {
+          console.error(error);
+          res.status(500).send('Server error');
+        } else {
+          const patientFirstName = patientResults[0].patient_first_name;
+          const patientLastName = patientResults[0].patient_last_name;
+          const emails = results.map(row => row.user_email);
+          
+          const msg = {
         from: 'medivance.no.reply@gmail.com',
         to: emails,
         subject: 'Heart Rate Alert',
-        text: `A heart rate of ${heartRate} BPM has been detected, which is outside the normal range.`,
+        text: `Hello,    
+
+
+A heart rate of ${heartRate} BPM has been detected for patient ${patientFirstName} ${patientLastName} with patient id ${userId}, which is outside the normal range.
+
+You are receiving this alert email because the patient has granted you access in the event of an emergency.
+
+Please note that this could be a false alert email since there is no absolute way of determining the event of an emergency. For instance, the heart rate could be outside the normal range due to physical activity, fever, dehydration, and etc.
+
+This is an automated email. Please do not reply.
+          
+
+Regards,
+
+Medivance Support Team`,
       };
 
       sgMail.send(msg, (error) => {
@@ -986,7 +1014,9 @@ app.post('/sendheartsalert', (req, res) => {
         } else {
           res.status(200).send('Email sent successfully');
         }
-      });      
+      });
     }
   });
+}
+});
 });
