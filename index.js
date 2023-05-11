@@ -982,12 +982,12 @@ app.post('/sendheartsalert', (req, res) => {
 
       sgMail.send(msg, (error) => {
         if (error) {
-          console.error(error);
+          console.error('Error sending email:', error.response.body);
           res.status(500).send('Error sending email');
         } else {
           res.status(200).send('Email sent successfully');
         }
-      });
+      });      
     }
   });
 });
