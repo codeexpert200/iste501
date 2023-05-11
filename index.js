@@ -954,3 +954,40 @@ app.get('/downloadmedicalprescription/:id', (req, res) => {
     }
   });
 });
+
+app.post('/sendheartsalert', (req, res) => {
+  const userId = parseInt(req.body.userId);
+  const heartRate = req.body.heartRate;
+
+  const query1 = `
+    SELECT u.user_email
+    FROM patient_access pa
+    INNER JOIN user u ON pa.patient_access_id = u.user_id
+    WHERE pa.user_id = ?;
+  `;
+
+  connection.query(query1, [userId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    } else {
+      const emails = results.map(row => row.email);
+
+      const msg = {
+        from: 'medivance.no.reply@gmail.com',
+        to: emails,
+        subject: 'Heart Rate Alert',
+        text: `A heart rate of ${heartRate} BPM has been detected, which is outside the normal range.`,
+      };
+
+      sgMail.send(msg, (error) => {
+        if (error) {
+          console.error(error);
+          res.status(500).send('Error sending email');
+        } else {
+          res.status(200).send('Email sent successfully');
+        }
+      });
+    }
+  });
+});
